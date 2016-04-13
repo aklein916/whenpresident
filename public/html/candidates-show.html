@@ -1,7 +1,7 @@
 <div data-ng-if="!vm.candidate">
   <h2>That candidate couldn't be found!</h2>
-  <div data-candidate-form data-candidate="vm.candidate" data-action="delete">
-  <button data-ng-click="delete()">Delete</button>
+  <div data-ng-if="action == 'edit'">
+    <button data-ng-click="delete()">Concede</button>
 </div>
 </div>
 <div data-ng-if="vm.candidate">
