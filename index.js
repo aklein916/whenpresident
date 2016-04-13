@@ -6,6 +6,7 @@ var app     = express();
 
 var Candidate = mongoose.model("Candidate");
 
+app.set("port", process.env.PORT || 3001);
 app.use("/public", express.static("public"));
 app.use(parser.json({extended: true}));
 
@@ -43,6 +44,6 @@ app.get("/*", function(req, res){
   res.sendFile(__dirname + "/views/main.html");
 });
 
-app.listen(3001, function() {
+app.listen(app.get("port"), function() {
   console.log("app listening on port 3001")
-})
+});
