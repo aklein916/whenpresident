@@ -50,11 +50,14 @@ app.get("/login/twitter", function(req, res){
     consumer_key: process.env.t_consumer_key,
     consumer_secret: process.env.t_consumer_secret
   }
+  //leg 1 is redirecting url
   request.post({url: url, oauth: oauth}, function(e, response){
     var auth_data = qstring.parse(response.body);
     var post_data = qstring.stringify({oauth_token: auth_data.oauth_token});
     req.session.t_oauth_token = auth_data.oauth_token;
     req.session.t_oauth_token_secret = auth_data.oauth_token_secret;
+
+  //leg 2 is getting temp tokens
     res.redirect("https://api.twitter.com/oauth/authenticate?" + post_data);
   });
 });
@@ -69,13 +72,44 @@ app.get("/login/twitter/callback", function(req, res){
     token_secret: req.session.t_oauth_token_secret,
     verifier: auth_data.oauth_verifier
   }
+  //leg 3 is getting permanent tokens
   request.post({url: url, oauth: oauth}, function(e, response){
     var auth_data = qstring.parse(response.body);
-    req.session.t_oauth_token = auth_data.oauth_token;
-    req.session.t_oauth_token_secret = auth_data.oauth_token_secret;
+    // req.session.t_oauth_token = auth_data.oauth_token;
+    // req.session.t_oauth_token_secret = auth_data.oauth_token_secret;
     req.session.t_user_id = auth_data.user_id;
     req.session.t_screen_name = auth_data.screen_name;
-    res.json(auth_data);
+    // res.json(auth_data); ** highlighted lines replaced by lines 80-87
+    req.session.t_oauth = {
+      consumer_key: process.env.t_consumer_key,
+      consumer_secret: process.env.t_consumer_secret,
+      token: auth_data.oauth_token,
+      token_secret: auth_data.oauth_token_secret
+    }
+    request.get({
+      url: "https://api.twitter.com/1.1/users/show.json",
+      json: true,
+      oauth: req.session.t_oauth,
+      qs: {
+        screen_name: req.session.t_screen_name
+      }
+    }, function(e, response){
+      res.json(response.body);
+    });
+  });
+});
+
+app.get("/apitest/:username", function(req, res){
+  request.get({
+    url: "http://api.twitter.com/1.1/statuses/user_timeline.json",
+    json: true,
+    oauth: req.session.t_oauth,
+    qs: {
+      screen_name: req.params.username,
+      count: 2
+    }
+  }, function(e, response){
+    res.json(response.body);
   });
 });
 
