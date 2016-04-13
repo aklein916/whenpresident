@@ -1,6 +1,8 @@
 <div data-ng-if="!vm.candidate">
   <h2>That candidate couldn't be found!</h2>
-  <button data-ng-click="delete()">Concede</button>
+  <div data-candidate-form data-candidate="vm.candidate" data-action="delete">
+  <button data-ng-click="delete()">Delete</button>
+</div>
 </div>
 <div data-ng-if="vm.candidate">
   <h2>{{vm.candidate.name}} for President in {{vm.candidate.year}}!</h2>
