@@ -11,8 +11,8 @@ mongoose.model("Candidate", CandidateSchema);
 
 module.exports = mongoose;
 
-// if(process.env.NODE_ENV == "production"){
-//   mongoose.connect(process.env.MONGOLAB_URI);
-// }else {
-//   mongoose.connect("mongodb://localhost/whenpresident");
-// }
+if(process.env.NODE_ENV == "production"){
+  mongoose.connect(process.env.MONGOLAB_URI);
+}else {
+  mongoose.connect("mongodb://localhost/whenpresident");
+}
